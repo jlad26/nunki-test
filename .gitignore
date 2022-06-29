@@ -1,0 +1,8 @@
+# Archive folder
+archive
+
+# Constants file with keys
+constants.py
+
+# Cache
+*.pyc
