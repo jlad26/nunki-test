@@ -14,10 +14,10 @@ class TwitterConnection:
                                 api_version='2')
                 
                 except TwitterConnectionError as e:
-	                print(e)
-                
+                        print(e)
+        
                 except Exception as e:
-	                print(e)
+                        print(e)
 
         def request(self, endpoint, params = None):
                 try:
@@ -28,7 +28,7 @@ class TwitterConnection:
                                 return self.api.request(endpoint, params)
                 
                 except TwitterRequestError as e:
-	                print(e)
+                        print(e)
                 
                 except Exception as e:
 	                print(e)
