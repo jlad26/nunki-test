@@ -1,34 +1,46 @@
 from TwitterAPI import TwitterAPI, TwitterRequestError, TwitterConnectionError
 
 class TwitterConnection:
+        '''
+        Class for connecting to Twitter and retrieving info.
+
+        Args:
+                keys (dict of str: str): Keys for authentication with Twitter.
+
+
+        Attributes:
+                api (TwitterAPI): Connection instance.
+        '''
 
         api = None
 
         def __init__(self, keys):
-                try:
-                        self.api = TwitterAPI(
-                                keys['consumer'],
-                                keys['consumer_secret'],
-                                keys['access_token'],
-                                keys['access_token_secret'],
-                                api_version='2')
-                
-                except TwitterConnectionError as e:
-                        print(e)
-        
-                except Exception as e:
-                        print(e)
+
+                self.api = TwitterAPI(
+                        keys['consumer'],
+                        keys['consumer_secret'],
+                        keys['access_token'],
+                        keys['access_token_secret'],
+                        api_version='2')
 
         def request(self, endpoint, params = None):
-                try:
+                '''Make a request to the Twitter API
 
-                        if params == None:
-                                return self.api.request(endpoint)
-                        else:
-                                return self.api.request(endpoint, params)
-                
-                except TwitterRequestError as e:
-                        print(e)
-                
-                except Exception as e:
-	                print(e)
+                Args:
+                        endpoint (str) : Twitter API endpoint.
+                        params (dict) : Parameters for request.
+
+                Returns:
+                        Response (TwitterAPI.TwitterResponse).
+                '''
+
+                try:
+                        response = self.api.request(endpoint, params=params)
+
+                        # Iterate through response to generate error if there is one.
+                        for item in response:
+                                pass
+                except (TwitterRequestError, TwitterConnectionError) as e:
+                        return(e)
+
+                return response

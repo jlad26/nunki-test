@@ -1,59 +1,104 @@
-from flask import Flask, request
-from flask_restful import Resource, Api
+from flask import Flask, request, abort
 from TwitterConnection import TwitterConnection
 import constants as C # Contains single constant KEYS for Twitter authentication
 
 app = Flask(__name__)
-api = Api(app)
 
-class User(Resource):
+@app.route('/users/<string:username>')
+def get_user_content(username):
+    '''Gets the tweets belong to a Twitter user.
 
-    def get(self, username):
-        connection = TwitterConnection(C.KEYS)
-        url = f"users/by/username/:{username}"
+    First gets user id, then gets tweets belonging to that user id.
 
-        users = []
-        for item in connection.request(url):
+    Args:
+        username (str) : User twitter handle.
+
+    Returns:
+        User info and tweets.
+    '''
+
+    url = f"users/by/username/:{username}"
+
+    output = {
+        'messages' : [],
+        'tweets' : [],
+        'user' : None
+    }
+
+    users_response = connection.request(url)
+    users = []
+
+    # Differentiate between user info and warning / error messages.
+    for item in users_response:
+        if 'username' in item:
             users.append(item)
-        
-        if users:
-
-            user = users[0]
-            url = f"users/:{user['id']}/tweets"
-            user_content = []
-            for item in connection.request(url):
-                user_content.append(item)
-            return user_content
-
         else:
+            output['messages'].append(item)
+    
+    # Check that something has been returned.
+    if users:
+
+        user = users[0]
+
+        # Check that response is a user.
+        if 'username' not in user:
+            abort(404, description = user)
+        else:
+
+            output['user'] = user
             
-            return 'User not found'
+            url = f"users/:{user['id']}/tweets"
 
-class Keyword(Resource):
+            tweets_response = connection.request(url)
 
-    def get(self):
+            for item in tweets_response:
+                
+                # Differentiate between tweets and warning / error messages.
+                if 'text' in item or 'full_text' in item:
+                    output['tweets'].append(item)
+                else:
+                    output['messages'].append(item)
 
-        if 'q' not in request.args:
+    return output
 
-            return 'To use search, please use the query parameter q to specify your search term'
+@app.route('/search')
+def search():
+    '''Searches for Twitter tweets containing a keyword.
 
-        else:
-            connection = TwitterConnection(C.KEYS)
-            url = f"tweets/search/recent"
-            params = {
-                'query' : request.args['q'],
-                'tweet.fields':'author_id',
-                'expansions':'author_id'
-            }
+    The keyword is passed via the parameter 'q' in the query string and
+    and is available in the dictionary request.args.
 
-            results = []
-            for item in connection.request(url, params=params):
-                results.append(item)
+    Returns:
+        Tweets contining a keyword
+    '''
 
-            return results
+    output = {
+        'messages' : [],
+        'tweets' : []
+    }
 
-api.add_resource(User, '/users/<string:username>')
-api.add_resource(Keyword, '/search')
+    if 'q' not in request.args:
+
+        abort(401, 'To use search, please use the query parameter q to specify your search term')
+
+    else:
+
+        url = f"tweets/search/recent"
+        params = {
+            'query' : request.args['q'],
+            'tweet.fields':'author_id',
+            'expansions':'author_id'
+        }
+
+        # Differentiate between tweets and warning / error messages.
+        for item in connection.request(url, params=params):
+            if 'text' in item or 'full_text' in item:
+                output['tweets'].append(item)
+            else:
+                output['messages'].append(item)
+
+        return output
 
 if __name__ == '__main__':
+    connection = TwitterConnection(C.KEYS)
     app.run(debug=True)
