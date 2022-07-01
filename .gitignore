@@ -5,4 +5,4 @@ archive
 constants.py
 
 # Cache
-*.pyc
+__pycache__
