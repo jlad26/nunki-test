@@ -99,6 +99,7 @@ def search():
 
         return output
 
+connection = TwitterConnection(C.KEYS)
+
 if __name__ == '__main__':
-    connection = TwitterConnection(C.KEYS)
     app.run(debug=True)
