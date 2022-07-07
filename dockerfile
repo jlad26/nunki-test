@@ -10,9 +10,6 @@ ENV FLASK_APP=nunki-test-api.py
 COPY environment.yml .
 RUN conda env create -n nunki -f environment.yml
 
-# Make RUN commands use the new environment:
-SHELL ["conda", "run", "-n", "nunki", "/bin/bash", "-c"]
-
 # define the port number the container should expose
 EXPOSE 5000
 
