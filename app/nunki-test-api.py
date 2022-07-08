@@ -1,8 +1,14 @@
 from flask import Flask, request, abort
-from TwitterConnection import TwitterConnection
-import constants as C # Contains single constant KEYS for Twitter authentication
+from imports.TwitterConnection import TwitterConnection
+import imports.constants as C # Contains single constant KEYS for Twitter authentication
 
 app = Flask(__name__)
+
+@app.route('/')
+def index():
+    '''Returns a message at the root just to show the app is working.'''
+    
+    return 'Works!'
 
 @app.route('/users/<string:username>')
 def get_user_content(username):
@@ -102,4 +108,4 @@ def search():
 connection = TwitterConnection(C.KEYS)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False, host='0.0.0.0')
