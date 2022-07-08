@@ -6,7 +6,7 @@ LABEL maintainer="Jon Anwyl <jon.anwyl@gmail.com>"
 
 # Create the environment.
 COPY environment.yml .
-RUN conda env create -n nunki -f environment.yml
+RUN conda update conda -y && conda env create -n nunki -f environment.yml
 
 # define the port number the container should expose
 EXPOSE 5000
