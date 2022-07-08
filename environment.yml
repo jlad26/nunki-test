@@ -19,7 +19,7 @@ dependencies:
   - libstdcxx-ng=11.2.0=h1234567_1
   - libuuid=1.0.3=h7f8727e_2
   - markupsafe=2.1.1=py310h7f8727e_0
-  - ncurses=6.3=h7f8727e_2
+  - ncurses=6.3=h5eee18b_3
   - openssl=1.1.1p=h5eee18b_0
   - pip=21.2.4=py310h06a4308_0
   - python=3.10.4=h12debd9_0
